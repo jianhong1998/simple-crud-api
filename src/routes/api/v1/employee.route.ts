@@ -2,14 +2,18 @@ import { Request, Router, Response, NextFunction } from "express";
 import EmployeeDef from "../../../util/employees/models/EmployeeDef.model";
 import EmployeeService from "../../../util/employees/services/Employee.service";
 import ErrorResponse from "../../../util/response/models/ErrorResponse.model";
-import EmployeeRequest, { TestEmployeeRequest } from "../../../util/employees/models/EmployeeRequest.model";
+import EmployeeRequest from "../../../util/employees/models/EmployeeRequest.model";
 import ErrorHandler from "../../../util/response/services/ErrorHandler.service";
 import EmployeeRequestVerificationService from "../../../util/employees/services/EmployeeRequestVerification.service";
 import Department from "../../../util/employees/models/Department.enum";
 
 const employeeRouter = Router();
 
-const verifyRequestMiddleware = () =>
+const getErrorMessageForInvalidEmployeeId = (employeeId: string): ErrorResponse => {
+    return new ErrorResponse(`Invalid Employee ID (${employeeId}): employeeId must be a positive number.`);
+};
+
+const verifyEmployeeRequestMiddleware = () =>
     (req: Request<{}, {}, EmployeeRequest>, res: Response<EmployeeDef | ErrorResponse>, next: NextFunction) => {
         const method = req.method.toUpperCase();
 
@@ -40,16 +44,27 @@ const verifyRequestMiddleware = () =>
                 return;
             }
         }
-
+        
         next();
     }
 ;
 
-const getErrorMessageForInvalidEmployeeId = (employeeId: string): ErrorResponse => {
-    return new ErrorResponse(`Invalid Employee ID (${employeeId}): employeeId must be a positive number.`);
-}
 
-employeeRouter.use(verifyRequestMiddleware());
+const verifyEmployeeIdMiddleware = () => (req: Request<{emp_id: string}>, res: Response<EmployeeDef | ErrorResponse>, next: NextFunction) => {
+    const {verifyEmployeeId} = EmployeeRequestVerificationService;
+    
+    // 400 - Invalid emp_id
+    if (!verifyEmployeeId(req.params.emp_id)) {
+        res.status(400).send(getErrorMessageForInvalidEmployeeId(req.params.emp_id));
+        return;
+    }
+
+    next();
+};
+
+
+employeeRouter.use(verifyEmployeeRequestMiddleware());
+employeeRouter.use('/:emp_id', verifyEmployeeIdMiddleware());
 
 // GET - all
 employeeRouter.get('/', (req: Request, res: Response<{employees: EmployeeDef[]} | ErrorResponse>) => {
@@ -67,14 +82,6 @@ employeeRouter.get('/', (req: Request, res: Response<{employees: EmployeeDef[]} 
 
 // GET
 employeeRouter.get('/:emp_id', (req: Request<{emp_id: string}>, res: Response<EmployeeDef | ErrorResponse>) => {
-    const {verifyEmployeeId} = EmployeeRequestVerificationService;
-    
-    // 400 - Invalid emp_id
-    if (!verifyEmployeeId(req.params.emp_id)) {
-        res.status(400).send(getErrorMessageForInvalidEmployeeId(req.params.emp_id));
-        return;
-    }
-    
     try {
         const employeeId = parseInt(req.params.emp_id);
     
@@ -120,14 +127,6 @@ employeeRouter.post('/', (req: Request<{}, {}, EmployeeRequest>, res: Response<E
 
 // PUT
 employeeRouter.put('/:emp_id', (req: Request<{emp_id: string}, {}, EmployeeRequest>, res: Response<EmployeeDef | ErrorResponse>) => {
-    const { verifyEmployeeId } = EmployeeRequestVerificationService;
-    
-    // 400 - Invalid emp_id
-    if (!verifyEmployeeId(req.params.emp_id)) {
-        res.status(400).send(getErrorMessageForInvalidEmployeeId(req.params.emp_id));
-        return;
-    }
-
     const employeeId = parseInt(req.params.emp_id);
     const { name, salary } = req.body;
     let { department } = req.body;
@@ -155,16 +154,9 @@ employeeRouter.put('/:emp_id', (req: Request<{emp_id: string}, {}, EmployeeReque
 
 // DELETE
 employeeRouter.delete('/:emp_id', (req: Request<{emp_id: string}>, res: Response<ErrorResponse>) => {
-    const {verifyEmployeeId} = EmployeeRequestVerificationService;
-    const {deleteEmployee} = EmployeeService;
-    
-    // 400 - Invalid emp_id
-    if (!verifyEmployeeId(req.params.emp_id)) {
-        res.status(400).send(getErrorMessageForInvalidEmployeeId(req.params.emp_id));
-        return;
-    }
-
     try {
+        const {deleteEmployee} = EmployeeService;
+
         const employeeId = parseInt(req.params.emp_id);
 
         const {errorMessage, statusCode} = deleteEmployee(employeeId);
