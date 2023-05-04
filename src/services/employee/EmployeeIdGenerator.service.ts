@@ -1,4 +1,5 @@
-import EmployeeStorageController from "../controllers/EmployeeStorage.controller";
+import EmployeeStorageController from "../../controllers/storageController/EmployeeStorage.controller";
+
 
 export default class EmployeeIdGenerator {
     private static idRunningNumber = EmployeeStorageController.size();

@@ -1,4 +1,5 @@
-import EmployeeDef from "../models/EmployeeDef.model"
+import EmployeeDef from "../../models/employee/EmployeeDef.model";
+
 
 export default abstract class EmployeeStorageController {
     private static employeeMap: Map<number, EmployeeDef> = new Map();

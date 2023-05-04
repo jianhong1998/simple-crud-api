@@ -1,9 +1,9 @@
-import EmployeeStorageController from "../controllers/EmployeeStorage.controller";
-import EmployeeDef from "../models/EmployeeDef.model";
-import DataResponse from '../../response/models/Response.model'
-import Department from "../models/Department.enum";
-import EmployeeRequest from "../models/EmployeeRequest.model";
+import EmployeeStorageController from "../../controllers/storageController/EmployeeStorage.controller";
+import Department from "../../models/employee/Department.enum";
 import EmployeeIdGenerator from "./EmployeeIdGenerator.service";
+import EmployeeRequest from "../../models/request/EmployeeRequest.model";
+import DataResponse from "../../models/response/Response.model";
+import EmployeeDef from "../../models/employee/EmployeeDef.model";
 
 export default class EmployeeService {
     // Handlered response: 200

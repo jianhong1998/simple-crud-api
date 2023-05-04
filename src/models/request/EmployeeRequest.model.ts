@@ -1,4 +1,4 @@
-import Department from "./Department.enum";
+import Department from "../employee/Department.enum";
 
 export default class EmployeeRequest {
     public name: string;

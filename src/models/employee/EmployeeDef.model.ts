@@ -1,5 +1,5 @@
 import Department from './Department.enum';
-import EmployeeRequest from './EmployeeRequest.model';
+import EmployeeRequest from '../request/EmployeeRequest.model';
 
 export default class EmployeeDef extends EmployeeRequest {
     public readonly id: number;

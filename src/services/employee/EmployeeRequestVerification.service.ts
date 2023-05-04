@@ -1,5 +1,7 @@
-import Department from "../models/Department.enum";
-import NumberVerifier from "../../number/NumberVerifier.service";
+import Department from "../../models/employee/Department.enum";
+import NumberVerifier from "../number/NumberVerifier.service";
+
+
 
 export default class EmployeeRequestVerificationService {
     public static verifyDepartment(department: unknown): boolean {

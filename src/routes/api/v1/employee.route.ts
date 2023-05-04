@@ -1,11 +1,12 @@
 import { Request, Router, Response, NextFunction } from "express";
-import EmployeeDef from "../../../util/employees/models/EmployeeDef.model";
-import EmployeeService from "../../../util/employees/services/Employee.service";
-import ErrorResponse from "../../../util/response/models/ErrorResponse.model";
-import EmployeeRequest from "../../../util/employees/models/EmployeeRequest.model";
-import ErrorHandler from "../../../util/response/services/ErrorHandler.service";
-import EmployeeRequestVerificationService from "../../../util/employees/services/EmployeeRequestVerification.service";
-import Department from "../../../util/employees/models/Department.enum";
+
+import ErrorResponse from "../../../models/response/ErrorResponse.model";
+
+
+import { deleteEmployeeRequest, getAllEmloyeesRequest, getEmployeeRequest, postEmployeeRequest, putEmployeeRequest } from '../../../controllers/requestHandlers/employeeRequestHandler.controller'
+import EmployeeRequestVerificationService from "../../../services/employee/EmployeeRequestVerification.service";
+import EmployeeRequest from "../../../models/request/EmployeeRequest.model";
+import EmployeeDef from "../../../models/employee/EmployeeDef.model";
 
 const employeeRouter = Router();
 
@@ -67,111 +68,23 @@ employeeRouter.use(verifyEmployeeRequestMiddleware());
 employeeRouter.use('/:emp_id', verifyEmployeeIdMiddleware());
 
 // GET - all
-employeeRouter.get('/', (req: Request, res: Response<{employees: EmployeeDef[]} | ErrorResponse>) => {
-    try {
-        const {statusCode, data: employees} = EmployeeService.getAllEmployees();
-    
-        // 200
-        res.status(statusCode).send({employees});
-    } catch(error) {
-        // 500
-        res.status(500).send(new ErrorResponse(ErrorHandler.handlerUnknownError(error)));
-    }
-});
+employeeRouter.get('/', getAllEmloyeesRequest);
 
 
 // GET
-employeeRouter.get('/:emp_id', (req: Request<{emp_id: string}>, res: Response<EmployeeDef | ErrorResponse>) => {
-    try {
-        const employeeId = parseInt(req.params.emp_id);
-    
-        const {data, errorMessage, statusCode} = EmployeeService.getEmployee(employeeId);
-
-        if (statusCode === 200) {
-            // 200
-            res.status(statusCode).send(data);
-        } else {
-            // 404
-            res.status(statusCode).send(new ErrorResponse(errorMessage));
-        }
-    } catch (error) {
-        // 500
-        res.status(500).send(new ErrorResponse(ErrorHandler.handlerUnknownError(error)));
-    }
-});
+employeeRouter.get('/:emp_id', getEmployeeRequest);
 
 
 // POST
-employeeRouter.post('/', (req: Request<{}, {}, EmployeeRequest>, res: Response<EmployeeDef | ErrorResponse>) => {
-    const {name, salary} = req.body;
-    let {department} = req.body;
-
-    department = department.toUpperCase() as Department;
-
-    try {
-        const {data: createdEmployee, errorMessage, statusCode} = EmployeeService.createEmployee(new EmployeeRequest(name, salary, department));
-    
-        if (statusCode == 200) {
-            // 200
-            res.status(statusCode).send(createdEmployee);
-        } else {
-            // 400 && 500
-            res.status(statusCode).send(new ErrorResponse(errorMessage));
-        }
-    } catch(error) {
-        // 500
-        res.status(500).send(new ErrorResponse(ErrorHandler.handlerUnknownError(error)));
-    }
-});
+employeeRouter.post('/', postEmployeeRequest);
 
 
 // PUT
-employeeRouter.put('/:emp_id', (req: Request<{emp_id: string}, {}, EmployeeRequest>, res: Response<EmployeeDef | ErrorResponse>) => {
-    const employeeId = parseInt(req.params.emp_id);
-    const { name, salary } = req.body;
-    let { department } = req.body;
-    department = department.toUpperCase() as Department;
-
-    try {
-        const {data: updatedEmployee, errorMessage, statusCode} = EmployeeService.updateEmployee(employeeId, new EmployeeRequest(name, salary, department));
-    
-        if (statusCode == 200) {
-            // 200
-            res.status(statusCode).send(updatedEmployee);
-        } else if (statusCode == 304) {
-            // 304
-            res.sendStatus(304);
-        } else {
-            // 404 && 500
-            res.status(statusCode).send(new ErrorResponse(errorMessage));
-        }
-    } catch(error) {
-        // 500
-        res.status(500).send(new ErrorResponse(ErrorHandler.handlerUnknownError(error)));
-    }
-});
+employeeRouter.put('/:emp_id', putEmployeeRequest);
 
 
 // DELETE
-employeeRouter.delete('/:emp_id', (req: Request<{emp_id: string}>, res: Response<ErrorResponse>) => {
-    try {
-        const {deleteEmployee} = EmployeeService;
-
-        const employeeId = parseInt(req.params.emp_id);
-
-        const {errorMessage, statusCode} = deleteEmployee(employeeId);
-
-        if (statusCode === 204) {
-            res.sendStatus(statusCode);
-        } else {
-            res.status(statusCode).send(new ErrorResponse(errorMessage));
-        }
-    } catch(error) {
-        const {handlerUnknownError} = ErrorHandler;
-        
-        res.status(500).send(new ErrorResponse(handlerUnknownError(error)));
-    }
-});
+employeeRouter.delete('/:emp_id', deleteEmployeeRequest);
 
 
 export default employeeRouter;
