@@ -41,3 +41,9 @@ export default class EmployeeRequest {
     //     return this.department;
     // }
 }
+
+export class TestEmployeeRequest extends EmployeeRequest {
+    constructor() {
+        super("", -1, "" as Department);
+    }
+}

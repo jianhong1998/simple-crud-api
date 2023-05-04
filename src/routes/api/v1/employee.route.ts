@@ -1,13 +1,55 @@
-import { Request, Router, Response } from "express";
+import { Request, Router, Response, NextFunction } from "express";
 import EmployeeDef from "../../../util/employees/models/EmployeeDef.model";
 import EmployeeService from "../../../util/employees/services/Employee.service";
 import ErrorResponse from "../../../util/response/models/ErrorResponse.model";
-import EmployeeRequest from "../../../util/employees/models/EmployeeRequest.model";
+import EmployeeRequest, { TestEmployeeRequest } from "../../../util/employees/models/EmployeeRequest.model";
 import ErrorHandler from "../../../util/response/services/ErrorHandler.service";
 import EmployeeRequestVerificationService from "../../../util/employees/services/EmployeeRequestVerification.service";
 import Department from "../../../util/employees/models/Department.enum";
 
 const employeeRouter = Router();
+
+const verifyRequestMiddleware = () =>
+    (req: Request<{}, {}, EmployeeRequest>, res: Response<EmployeeDef | ErrorResponse>, next: NextFunction) => {
+        const method = req.method.toUpperCase();
+
+        if (method === "PUT" || method === "POST") {
+            const {name, department, salary} = req.body;
+            const {verifyName, verifySalary, verifyDepartment} = EmployeeRequestVerificationService;
+    
+            if (!verifyName(name)) {
+                res.status(400).send(new ErrorResponse('Invalid EmployeeRequest: name must be string.'));
+                return;
+            }
+    
+            if (!verifySalary(salary)) {
+                res.status(400).send(new ErrorResponse('Invalid EmployeeRequest: salary must be a positive number.'));
+                return;
+            }
+    
+            if (!verifyDepartment(department)) {
+                const errorResponse = new ErrorResponse('');
+    
+                if (typeof department === "undefined") {
+                    errorResponse.errorMessage = "Invalid EmployeeRequest: department is missing in request body.";
+                } else {
+                    errorResponse.errorMessage = `Invalid EmployeeRequest: department is invalid. Department received: ${department}.`;
+                }
+                
+                res.status(400).send(errorResponse);
+                return;
+            }
+        }
+
+        next();
+    }
+;
+
+const getErrorMessageForInvalidEmployeeId = (employeeId: string): ErrorResponse => {
+    return new ErrorResponse(`Invalid Employee ID (${employeeId}): employeeId must be a positive number.`);
+}
+
+employeeRouter.use(verifyRequestMiddleware());
 
 // GET - all
 employeeRouter.get('/', (req: Request, res: Response<{employees: EmployeeDef[]} | ErrorResponse>) => {
@@ -22,13 +64,14 @@ employeeRouter.get('/', (req: Request, res: Response<{employees: EmployeeDef[]} 
     }
 });
 
+
 // GET
 employeeRouter.get('/:emp_id', (req: Request<{emp_id: string}>, res: Response<EmployeeDef | ErrorResponse>) => {
     const {verifyEmployeeId} = EmployeeRequestVerificationService;
     
     // 400 - Invalid emp_id
     if (!verifyEmployeeId(req.params.emp_id)) {
-        res.status(400).send(new ErrorResponse(`Invalid Employee ID (${req.params.emp_id}): employeeId must be only number.`));
+        res.status(400).send(getErrorMessageForInvalidEmployeeId(req.params.emp_id));
         return;
     }
     
@@ -50,29 +93,13 @@ employeeRouter.get('/:emp_id', (req: Request<{emp_id: string}>, res: Response<Em
     }
 });
 
+
 // POST
 employeeRouter.post('/', (req: Request<{}, {}, EmployeeRequest>, res: Response<EmployeeDef | ErrorResponse>) => {
     const {name, salary} = req.body;
     let {department} = req.body;
 
     department = department.toUpperCase() as Department;
-    
-    // 400 - Invalid body - Not EmployeeRequest
-    if (
-        typeof name === "undefined" ||
-        typeof salary === "undefined" ||
-        typeof department === "undefined"
-    ) {
-        res.status(400).send(new ErrorResponse('EmployeeRequest Not Found: name, salary or department is not found in request body.'));
-        
-        return;
-    }
-
-    // 400 - Invalid department
-    if (!EmployeeRequestVerificationService.verifyDepartment(department.toUpperCase())) {
-        res.status(400).send(new ErrorResponse(`Invalid Department: department in request body is invalid. Received department: ${department}`));
-        return;
-    }
 
     try {
         const {data: createdEmployee, errorMessage, statusCode} = EmployeeService.createEmployee(new EmployeeRequest(name, salary, department));
@@ -97,7 +124,7 @@ employeeRouter.put('/:emp_id', (req: Request<{emp_id: string}, {}, EmployeeReque
     
     // 400 - Invalid emp_id
     if (!verifyEmployeeId(req.params.emp_id)) {
-        res.status(400).send(new ErrorResponse(`Invalid Employee ID (${req.params.emp_id}): employeeId must be only number.`));
+        res.status(400).send(getErrorMessageForInvalidEmployeeId(req.params.emp_id));
         return;
     }
 
@@ -105,23 +132,6 @@ employeeRouter.put('/:emp_id', (req: Request<{emp_id: string}, {}, EmployeeReque
     const { name, salary } = req.body;
     let { department } = req.body;
     department = department.toUpperCase() as Department;
-
-    // 400 - Invalid body - Not EmployeeRequest
-    if (
-        typeof name === "undefined" ||
-        typeof salary === "undefined" ||
-        typeof department === "undefined"
-    ) {
-        res.status(400).send(new ErrorResponse('EmployeeRequest Not Found: name, salary or department is not found in request body.'));
-        
-        return;
-    }
-
-    // 400 - Invalid department
-    if (!EmployeeRequestVerificationService.verifyDepartment(department.toUpperCase())) {
-        res.status(400).send(new ErrorResponse(`Invalid Department: department in request body is invalid. Received department: ${department}`));
-        return;
-    }
 
     try {
         const {data: updatedEmployee, errorMessage, statusCode} = EmployeeService.updateEmployee(employeeId, new EmployeeRequest(name, salary, department));
@@ -150,7 +160,7 @@ employeeRouter.delete('/:emp_id', (req: Request<{emp_id: string}>, res: Response
     
     // 400 - Invalid emp_id
     if (!verifyEmployeeId(req.params.emp_id)) {
-        res.status(400).send(new ErrorResponse(`Invalid Employee ID (${req.params.emp_id}): employeeId must be only number.`));
+        res.status(400).send(getErrorMessageForInvalidEmployeeId(req.params.emp_id));
         return;
     }
 

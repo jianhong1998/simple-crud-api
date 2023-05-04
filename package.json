@@ -2,9 +2,11 @@
   "name": "project---crud-rest-api",
   "version": "1.0.0",
   "description": "",
-  "main": "index.ts",
+  "main": "dist/index.js",
   "scripts": {
-    "start": "nodemon index.ts"
+    "start": "npm run build && node dist/index.js",
+    "build": "npx tsc",
+    "test": "nodemon index.ts"
   },
   "keywords": [],
   "author": "",

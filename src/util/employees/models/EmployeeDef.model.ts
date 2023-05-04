@@ -52,3 +52,9 @@ export default class EmployeeDef extends EmployeeRequest {
         ;
     }
 }
+
+export class TestEmployee extends EmployeeDef {
+    constructor() {
+        super(-1, "", -1, "" as Department);
+    }
+}
