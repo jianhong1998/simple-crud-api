@@ -2,11 +2,11 @@ import { Request, Router, Response, NextFunction } from "express";
 
 import ErrorResponse from "../../../models/response/ErrorResponse.model";
 
-
 import { deleteEmployeeRequest, getAllEmloyeesRequest, getEmployeeRequest, postEmployeeRequest, putEmployeeRequest } from '../../../controllers/requestHandlers/employeeRequestHandler.controller'
-import EmployeeRequestVerificationService from "../../../services/employee/EmployeeRequestVerification.service";
+
 import EmployeeRequest from "../../../models/request/EmployeeRequest.model";
 import EmployeeDef from "../../../models/employee/EmployeeDef.model";
+import EmployeeRequestVerificationService from "../../../services/employee/employeeRequestVerification.service";
 
 const employeeRouter = Router();
 

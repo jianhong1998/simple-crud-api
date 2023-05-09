@@ -2,17 +2,17 @@ import { RequestHandler, Response, Request } from "express";
 
 import ErrorResponse from "../../models/response/ErrorResponse.model";
 import ErrorHandler from "../../services/response/ErrorHandler.service";
-import EmployeeService from "../../services/employee/Employee.service";
+import EmployeeService from "../../services/employee/employee.service";
 
 import Department from "../../models/employee/Department.enum";
 import EmployeeDef from "../../models/employee/EmployeeDef.model";
 import EmployeeRequest from "../../models/request/EmployeeRequest.model";
 
-const getEmployeeRequest: RequestHandler<{emp_id: string}> = (req: Request, res: Response<EmployeeDef | ErrorResponse>) => {
+const getEmployeeRequest: RequestHandler<{emp_id: string}> = async (req: Request, res: Response<EmployeeDef | ErrorResponse>) => {
     try {
         const employeeId = parseInt(req.params.emp_id);
     
-        const {data, errorMessage, statusCode} = EmployeeService.getEmployee(employeeId);
+        const {data, errorMessage, statusCode} = await EmployeeService.getEmployee(employeeId);
 
         if (statusCode === 200) {
             // 200
@@ -27,9 +27,9 @@ const getEmployeeRequest: RequestHandler<{emp_id: string}> = (req: Request, res:
     }
 }
 
-const getAllEmloyeesRequest: RequestHandler = (req: Request, res: Response<{employees: EmployeeDef[]} | ErrorResponse>) => {
+const getAllEmloyeesRequest: RequestHandler = async (req: Request, res: Response<{employees: EmployeeDef[]} | ErrorResponse>) => {
     try {
-        const {statusCode, data: employees} = EmployeeService.getAllEmployees();
+        const {statusCode, data: employees} = await EmployeeService.getAllEmployees();
     
         // 200
         res.status(statusCode).send({employees});
@@ -39,21 +39,18 @@ const getAllEmloyeesRequest: RequestHandler = (req: Request, res: Response<{empl
     }
 }
 
-const postEmployeeRequest: RequestHandler = (req: Request<{}, {}, EmployeeRequest>, res: Response<EmployeeDef | ErrorResponse>) => {
+const postEmployeeRequest: RequestHandler = async (req: Request<{}, {}, EmployeeRequest>, res: Response<EmployeeDef | ErrorResponse>) => {
     const {name, salary} = req.body;
     let {department} = req.body;
 
     department = department.toUpperCase() as Department;
 
     try {
-        const {data: createdEmployee, errorMessage, statusCode} = EmployeeService.createEmployee(new EmployeeRequest(name, salary, department));
+        const {data: createdEmployee, errorMessage, statusCode} = await EmployeeService.createEmployee(new EmployeeRequest(name, salary, department));
     
         if (statusCode == 200) {
             // 200
             res.status(statusCode).send(createdEmployee);
-        } else {
-            // 400 && 500
-            res.status(statusCode).send(new ErrorResponse(errorMessage));
         }
     } catch(error) {
         // 500
@@ -61,14 +58,14 @@ const postEmployeeRequest: RequestHandler = (req: Request<{}, {}, EmployeeReques
     }
 };
 
-const putEmployeeRequest: RequestHandler<{emp_id: string}, {}, EmployeeRequest> = (req: Request, res: Response<EmployeeDef | ErrorResponse>) => {
+const putEmployeeRequest: RequestHandler<{emp_id: string}, {}, EmployeeRequest> = async (req: Request, res: Response<EmployeeDef | ErrorResponse>) => {
     const employeeId = parseInt(req.params.emp_id);
     const { name, salary } = req.body;
     let { department } = req.body;
     department = department.toUpperCase() as Department;
 
     try {
-        const {data: updatedEmployee, errorMessage, statusCode} = EmployeeService.updateEmployee(employeeId, new EmployeeRequest(name, salary, department));
+        const {data: updatedEmployee, errorMessage, statusCode} = await EmployeeService.updateEmployee(employeeId, new EmployeeRequest(name, salary, department));
     
         if (statusCode == 200) {
             // 200
@@ -77,7 +74,7 @@ const putEmployeeRequest: RequestHandler<{emp_id: string}, {}, EmployeeRequest> 
             // 304
             res.sendStatus(304);
         } else {
-            // 404 && 500
+            // 404
             res.status(statusCode).send(new ErrorResponse(errorMessage));
         }
     } catch(error) {
@@ -86,17 +83,19 @@ const putEmployeeRequest: RequestHandler<{emp_id: string}, {}, EmployeeRequest> 
     }
 };
 
-const deleteEmployeeRequest: RequestHandler<{emp_id: string}> = (req: Request, res: Response<ErrorResponse>) => {
+const deleteEmployeeRequest: RequestHandler<{emp_id: string}> = async (req: Request, res: Response<ErrorResponse>) => {
     try {
-        const {deleteEmployee} = EmployeeService;
+        const { deleteEmployee } = EmployeeService;
 
         const employeeId = parseInt(req.params.emp_id);
 
-        const {errorMessage, statusCode} = deleteEmployee(employeeId);
+        const {errorMessage, statusCode} = await deleteEmployee(employeeId);
 
         if (statusCode === 204) {
+            // 204
             res.sendStatus(statusCode);
         } else {
+            // 404
             res.status(statusCode).send(new ErrorResponse(errorMessage));
         }
     } catch(error) {

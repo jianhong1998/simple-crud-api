@@ -1,48 +1,19 @@
 import Department from './Department.enum';
 import EmployeeRequest from '../request/EmployeeRequest.model';
+import EmployeeAttributes from './EmployeeAttributes.model';
 
-export default class EmployeeDef extends EmployeeRequest {
+export default class EmployeeDef extends EmployeeRequest implements EmployeeAttributes {
     public readonly id: number;
     
     constructor(id: number, name: string, salary: number, department: Department) {
+        if (typeof salary !== "number") {
+            salary = parseFloat(salary);
+        }
+        
         super(name, salary, department);
 
         this.id = id;
     }
-
-    // public getId(): number {
-    //     return this.id;
-    // }
-
-    // public getName(): string {
-    //     return this.name;
-    // }
-
-    // public getSalary(): number {
-    //     return this.salary;
-    // }
-
-    // public getDepartment(): Department {
-    //     return this.department;
-    // }
-
-    // public setName(name: string): string {
-    //     this.name = name;
-        
-    //     return this.name;
-    // }
-
-    // public setSalary(salary: number): number {
-    //     this.salary = salary;
-        
-    //     return this.salary;
-    // }
-
-    // public setDepartment(department: Department): Department {
-    //     this.department = department;
-        
-    //     return this.department;
-    // }
 
     compare(employee: EmployeeDef): boolean {
         return  this.id === employee.id &&

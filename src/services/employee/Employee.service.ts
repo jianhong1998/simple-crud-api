@@ -1,134 +1,118 @@
-import EmployeeStorageController from "../../controllers/storageController/EmployeeStorage.controller";
-import Department from "../../models/employee/Department.enum";
-import EmployeeIdGenerator from "./EmployeeIdGenerator.service";
 import EmployeeRequest from "../../models/request/EmployeeRequest.model";
 import DataResponse from "../../models/response/Response.model";
-import EmployeeDef from "../../models/employee/EmployeeDef.model";
+import EmployeeDef, { TestEmployee } from "../../models/employee/EmployeeDef.model";
+import EmployeeDataModel from "../../models/employee/EmployeeDataModel.model";
+import ErrorHandler from "../response/ErrorHandler.service";
 
 export default class EmployeeService {
     // Handlered response: 200
-    public static getAllEmployees(): DataResponse<EmployeeDef[]> {
-        const data = EmployeeStorageController.getAll();
+    public static async getAllEmployees(): Promise<DataResponse<EmployeeDef[]>> {
+        const employeeDataModels = await EmployeeDataModel.findAll();
 
-        return new DataResponse(data, 200, '');
+        const employees = employeeDataModels.map(employeeDataModel => {
+            const { id, name, department, salary } = employeeDataModel;
+            
+            return new EmployeeDef(id, name, salary, department);
+        });
+
+        return new DataResponse(employees, 200, '');
     }
 
     // Handlered response: 200, 404
-    public static getEmployee(employeeId: number): DataResponse<EmployeeDef> {
-        const employee = EmployeeStorageController.get(employeeId);
+    public static async getEmployee(employeeId: number): Promise<DataResponse<EmployeeDef>> {
+        try {
+            const employeeDataModel = await EmployeeDataModel.findByPk(employeeId);
+    
+            // 404
+            if (employeeDataModel === null) {
+                return new DataResponse(new TestEmployee(), 404, 'Employee Not Found.');
+            }
+    
+            // 200
+            const { id, name, department, salary } = employeeDataModel;
 
-        // 404
-        if (typeof employee === "undefined") {
-            return new DataResponse(new EmployeeDef(-1,"",-1,Department.HR), 404, 'Employee Not Found.');
+            return new DataResponse(new EmployeeDef(id, name, salary, department), 200, '');
+        } catch (error) {
+            return Promise.reject(Error(ErrorHandler.handlerUnknownError(error)));
         }
-
-        // 200
-        return new DataResponse(employee, 200, '');
+        
     }
 
-    // Handlered response: 200, 400, 500
-    public static createEmployee(newEmployee: EmployeeRequest): DataResponse<EmployeeDef> {
-        const employeeId = EmployeeIdGenerator.generateEmployeeId();
-
-        const employee = new EmployeeDef(employeeId, newEmployee.name, newEmployee.salary, newEmployee.department);
-
+    // Handlered response: 200
+    public static async createEmployee(newEmployee: EmployeeRequest): Promise<DataResponse<EmployeeDef>> {
         try {
-            const insertedEmployee = EmployeeStorageController.insert(employee);
+            const { id, name, department, salary } = await EmployeeDataModel.create({
+                name: newEmployee.name,
+                department: newEmployee.department,
+                salary: newEmployee.salary
+            });
 
-            return new DataResponse(insertedEmployee, 200, '');
+            return new DataResponse(new EmployeeDef(id, name, salary, department), 200, '');
         } catch (error) {
-            const response = new DataResponse(new EmployeeDef(-1, '', -1, Department.HR), -1, '');
-
-            if (!(error instanceof Error)) {
-                response.errorMessage = String(error);
-                response.statusCode = 500;
-                return response;
-            }
+            const response = new DataResponse(new TestEmployee(), -1, '');
             
-
-            if (error.message.includes('EmployeeId Exist:')) {
-                response.errorMessage = error.message;
-                response.statusCode = 400;
-                return response;
-            }
-
-            response.errorMessage = error.message;
-            response.statusCode = 500;
-
-            return response;
+            // 500
+            return Promise.reject(ErrorHandler.handlerUnknownError(error));
         }
         
     }
 
     // Handlered response: 200, 304, 404, 500
-    public static updateEmployee(employeeId: number, employeeRequest: EmployeeRequest): DataResponse<EmployeeDef> {
-        const employee = new EmployeeDef(employeeId, employeeRequest.name, employeeRequest.salary, employeeRequest.department);
-
+    public static async updateEmployee(employeeId: number, employeeRequest: EmployeeRequest): Promise<DataResponse<EmployeeDef>> {
         try {
-            const updatedEmployee = EmployeeStorageController.update(employee);
+            const currentEmployeeDataModel = await EmployeeDataModel.findByPk(employeeId);
 
-            // 200
-            return new DataResponse(updatedEmployee, 200, '');
-        } catch (error) {
-            const response = new DataResponse(new EmployeeDef(-1, "", -1, Department.HR), -1, '');
-            
-            if (!(error instanceof Error)) {
-                response.errorMessage = String(error);
-                response.statusCode = 500;
-                return response;
+            // 404
+            if (currentEmployeeDataModel === null) {
+                return new DataResponse(new TestEmployee(), 404, `Employee Not Found: EmployeeId ${employeeId} is not found in database.`);
             }
 
-            //  404
-            if (error.message.includes('Employee Not Found:')) {
-                response.statusCode = 404;
-                response.errorMessage = error.message;
-                return response;
-            }
-
-            // 400 - Handle invalid request (at route phase)
+            const { name: currentName, salary: currentSalary, department: currentDepartment } = currentEmployeeDataModel;
 
             // 304 - No Change
-            if (error.message.includes('No Change:')) {
-                response.statusCode = 304;
-                response.errorMessage = error.message;
-                return response;
+            if (
+                currentName === employeeRequest.name &&
+                currentDepartment === employeeRequest.department &&
+                currentSalary == employeeRequest.salary
+            ) {
+                return new DataResponse(new TestEmployee(), 304, 'No Change: Employee data is the same.');
             }
 
+            currentEmployeeDataModel.name = employeeRequest.name;
+            currentEmployeeDataModel.salary = employeeRequest.salary;
+            currentEmployeeDataModel.department = employeeRequest.department;
+
+            const {id: savedId , name: savedName, salary: savedSalary, department: savedDepartment} = await currentEmployeeDataModel.save();
+
+            // 200
+            return new DataResponse(new EmployeeDef(savedId, savedName, savedSalary, savedDepartment), 200, '');
+        } catch (error) {
+            // 400 - Handle invalid request (at route phase)
+            
             // 500
-            response.errorMessage = error.message;
-            response.statusCode = 500;
-            return response;
+            return Promise.reject(ErrorHandler.handlerUnknownError(error));
         }
     }
 
-    // Handlered response: 204, 400, 500
-    public static deleteEmployee(employeeId: number): DataResponse<EmployeeDef> {
+    // Handlered response: 204, 404
+    public static async deleteEmployee(employeeId: number): Promise<DataResponse<EmployeeDef>> {
         try {
-            const deletedEmployee = EmployeeStorageController.delete(employeeId);
+            const currentEmployeeDataModel = await EmployeeDataModel.findByPk(employeeId);
 
-            // 204
-            return new DataResponse(deletedEmployee, 204, '');
-        } catch (error) {
-            const response = new DataResponse(new EmployeeDef(-1, "", -1, Department.HR), -1, '');
+            if (currentEmployeeDataModel === null) {
+                return new DataResponse(new TestEmployee(), 404, `Employee Not Found: EmployeeId ${employeeId} is not found in database.`);
+            }
+
+            await currentEmployeeDataModel.destroy();
             
-            // 500
-            if (!(error instanceof Error)) {
-                response.statusCode = 500;
-                response.errorMessage = String(error);
-                return response;
+            if ((await EmployeeDataModel.findByPk(employeeId)) !== null) {
+                throw new Error(`Fail Delete Employee: Employee ${employeeId} cannot be deleted from database. Something went wrong.`);
             }
-
-            // 400
-            if (error.message.includes('Employee Not Found')) {
-                response.statusCode = 404;
-                response.errorMessage = error.message;
-                return response;
-            }
-
-            // 500
-            response.statusCode = 500;
-            response.errorMessage = error.message;
-            return response;
+            
+            // 204
+            return new DataResponse(new TestEmployee(), 204, '');
+        } catch (error) {
+            return Promise.reject(ErrorHandler.handlerUnknownError(error));
         }
     }
 }
