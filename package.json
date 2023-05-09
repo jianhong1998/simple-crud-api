@@ -4,7 +4,7 @@
   "description": "",
   "main": "dist/index.js",
   "scripts": {
-    "start": "npm run init && npm run build && node dist/index.js",
+    "start": "npm run migrate:run && npm run build && node dist/index.js",
     "build": "npx tsc",
     "dev": "npm run migrate:run && npm run build && nodemon src/index.ts",
     "migrate:run": "npx sequelize db:migrate",
