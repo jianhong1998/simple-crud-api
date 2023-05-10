@@ -3,6 +3,7 @@ import bodyParser from 'body-parser';
 import cors from 'cors';
 import apiRouter from './routes/api/api';
 import routes from './routes/routes';
+import getSequelize from './services/sequelize/sequelize.service';
 
 const app = express();
 
@@ -12,4 +13,8 @@ app.use(bodyParser.json());
 
 app.use('/', routes);
 
-export default app;
+app.listen({port: 3000}, async () => {
+    console.log('Server up!')
+    await getSequelize().authenticate()
+    console.log('Database Connected')
+})
