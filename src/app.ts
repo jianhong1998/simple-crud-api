@@ -13,8 +13,8 @@ app.use(bodyParser.json());
 
 app.use('/', routes);
 
-app.listen({port: 3000}, async () => {
-    console.log('Server up!')
-    await getSequelize().authenticate()
-    console.log('Database Connected')
+app.listen({port: 8000}, async () => {
+    console.log('Server up!');
+    await getSequelize().authenticate();
+    console.log('Database Connected.');
 })
