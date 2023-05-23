@@ -1,7 +1,6 @@
-import express, { Request, Response } from 'express';
+import express from 'express';
 import bodyParser from 'body-parser';
 import cors from 'cors';
-import apiRouter from './routes/api/api';
 import routes from './routes/routes';
 import getSequelize from './services/sequelize/sequelize.service';
 
@@ -17,4 +16,4 @@ app.listen({port: 8000}, async () => {
     console.log('Server up!');
     await getSequelize().authenticate();
     console.log('Database Connected.');
-})
+});

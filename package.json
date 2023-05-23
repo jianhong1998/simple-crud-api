@@ -2,12 +2,12 @@
   "name": "project---crud-rest-api",
   "version": "1.0.0",
   "description": "",
-  "main": "dist/index.js",
+  "main": "dist/app.js",
   "scripts": {
     "start": "npx sequelize db:migrate && npm run build && node dist/app.js",
     "undoMigrate": "npx sequelize db:migrate:undo:all",
     "build": "npx tsc",
-    "dev": "npm run migrate:run && npm run build && nodemon src/index.ts",
+    "dev": "npm run migrate:run && npm run build && nodemon src/app.ts",
     "migrate:run": "npx sequelize db:migrate",
     "init": "npm i && npm i -D && npx sequelize db:create && npm run migrate:run"
   },
@@ -15,6 +15,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@types/jwt-decode": "^3.1.0",
     "bcrypt": "^5.1.0",
     "body-parser": "^1.20.2",
     "connect-session-sequelize": "^7.1.6",
@@ -24,6 +25,7 @@
     "express-session": "^1.17.3",
     "helmet": "^6.1.5",
     "jsonwebtoken": "^9.0.0",
+    "jwt-decode": "^3.1.2",
     "pg": "^8.10.0",
     "pg-connection-string": "^2.5.0",
     "pg-hstore": "^2.3.4",
