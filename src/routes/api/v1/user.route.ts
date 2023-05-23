@@ -7,13 +7,14 @@ const userRouter = Router();
 
 const { userIdVerificationHandler, requestUserAttributeVerificationHandler } = UserRequestMiddleware;
 
-userRouter.use(VerifyAuthenticationMiddleware.verify());
+const verifyAuthenticationHandler = VerifyAuthenticationMiddleware.verify();
+
 userRouter.use('/:user_id', userIdVerificationHandler());
 
-userRouter.get('/', getAllUsersRequestHandler);
-userRouter.get('/:user_id', getUserRequestHandler);
+userRouter.get('/', verifyAuthenticationHandler, getAllUsersRequestHandler);
+userRouter.get('/:user_id', verifyAuthenticationHandler, getUserRequestHandler);
 userRouter.post('/', requestUserAttributeVerificationHandler(), postUserRequestHandler);
-userRouter.put('/:user_id', requestUserAttributeVerificationHandler(), updateUserRequestHandler);
-userRouter.delete('/:user_id', deleteUserRequestHandler);
+userRouter.put('/:user_id', verifyAuthenticationHandler, requestUserAttributeVerificationHandler(), updateUserRequestHandler);
+userRouter.delete('/:user_id', verifyAuthenticationHandler, deleteUserRequestHandler);
 
 export default userRouter;
