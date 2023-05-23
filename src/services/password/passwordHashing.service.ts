@@ -1,4 +1,5 @@
-import bcrypt from 'bcrypt';
+// import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 import ErrorHandler from '../response/ErrorHandler.service';
 
 export default class PasswordService {

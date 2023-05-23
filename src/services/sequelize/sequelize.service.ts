@@ -10,8 +10,8 @@ const getSequelize = (): Sequelize => {
         username: process.env.USER_NAME,
         password: process.env.PASS_WORD,
         database: process.env.DATA_BASE,
-        // host: "emp_api_db",
-        host: process.env.HOST,
+        host: "emp_api_db",
+        // host: process.env.HOST,
         dialect: "postgres"
     });
 };
