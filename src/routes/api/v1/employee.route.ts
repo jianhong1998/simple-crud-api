@@ -7,6 +7,7 @@ import { deleteEmployeeRequest, getAllEmloyeesRequest, getEmployeeRequest, postE
 import EmployeeRequest from "../../../models/request/EmployeeRequest.model";
 import EmployeeDef from "../../../models/employee/EmployeeDef.model";
 import EmployeeRequestVerificationService from "../../../services/employee/employeeRequestVerification.service";
+import VerifyAuthenticationMiddleware from "../../../controllers/middlewares/verifyAuthenticationMiddleware.controller";
 
 const employeeRouter = Router();
 
@@ -63,7 +64,7 @@ const verifyEmployeeIdMiddleware = () => (req: Request<{emp_id: string}>, res: R
     next();
 };
 
-
+employeeRouter.use(VerifyAuthenticationMiddleware.verify());
 employeeRouter.use(verifyEmployeeRequestMiddleware());
 employeeRouter.use('/:emp_id', verifyEmployeeIdMiddleware());
 

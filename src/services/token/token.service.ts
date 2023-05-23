@@ -17,13 +17,22 @@ export default class TokenService {
         }
     }
 
-    static decodeToken(token: string): {decoded?: jwt.JwtPayload | string, errorMessage: string | null} {
+    static decodeToken(token: string): {payload?: jwt.JwtPayload | string, errorMessage: string | null, header?: jwt.JwtHeader} {
         try {
-            const decoded = jwt.verify(token, JwtConfig.getJwtSecret());
+            const verifyResult = jwt.verify(token, JwtConfig.getJwtSecret());
+            
+            const decoded = jwt.decode(token, {complete: true});
+
+            if (decoded === null) {
+                throw new Error('jwt.decode() return a null.');
+            }
+
+            const header = decoded.header;
 
             return {
-                decoded,
-                errorMessage: null
+                payload: verifyResult,
+                errorMessage: null,
+                header
             };
         } catch(error) {
             return {
