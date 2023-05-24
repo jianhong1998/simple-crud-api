@@ -49,8 +49,6 @@ export default class EmployeeService {
 
             return new DataResponse(new EmployeeDef(id, name, salary, department), 200, '');
         } catch (error) {
-            const response = new DataResponse(new TestEmployee(), -1, '');
-            
             // 500
             return Promise.reject(ErrorHandler.handlerUnknownError(error));
         }

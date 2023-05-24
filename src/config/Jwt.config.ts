@@ -11,6 +11,7 @@ export default class JwtConfig {
 
     static getJwtExpireTime(): number {
         const seconds = 30 * 24 * 60 * 60;
+        // const seconds = 30;
 
         return seconds;
     }

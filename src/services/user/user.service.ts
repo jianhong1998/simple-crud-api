@@ -4,6 +4,8 @@ import UserDataModel from "../../models/user/UserDataModel.model";
 import ErrorHandler from "../response/ErrorHandler.service";
 import FullUserAttribute from "../../models/user/FullUserAttribute.model";
 import PasswordService from "../password/passwordHashing.service";
+import UserDepartmentAttribute from "../../models/department/UserDepartmentAttribute.model";
+import Department from "../../models/employee/Department.enum";
 
 export default class UserService {
     // Handlered response: 200
@@ -146,6 +148,42 @@ export default class UserService {
                 return resolve(new DataResponse({userId: '', username: '', departmentId: -1, password: ''}, 204, ''));
             } catch (error) {
                 return reject(ErrorHandler.handlerUnknownError(error));
+            }
+        });
+    }
+
+    // Handled response: 200, 404
+    public static async getAuthorizedDepartments(userId: string): Promise<DataResponse<Department[]>> {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const userDataModel = await UserDataModel.findByPk(userId);
+
+                // 404
+                if (userDataModel === null) {
+                    return resolve(new DataResponse([], 404, 'User not found.'));
+                }
+
+                const { departmentName } = await userDataModel.getDepartment();
+                const authorizedDepartmentArray: Department[] = [];
+
+                switch(departmentName.toLocaleLowerCase()) {
+                    case 'admin':
+                        authorizedDepartmentArray.push(...Object.values(Department));
+                        break;
+                    case 'ps':
+                        authorizedDepartmentArray.push(Department.PS);
+                        break;
+                    case 'hr':
+                        authorizedDepartmentArray.push(Department.HR);
+                        break;
+                    default:
+                        break;
+                }
+
+                // 200
+                resolve(new DataResponse(authorizedDepartmentArray, 200, ''));
+            } catch (error) {
+                reject(ErrorHandler.handlerUnknownError(error));
             }
         });
     }

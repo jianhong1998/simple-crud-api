@@ -2,7 +2,7 @@ import TokenVerificationResult from "../../models/token/tokenValidationResult.mo
 import TokenService from "../token/token.service";
 
 export default class VerifyAuthorizationService {
-    public static verifyLoginToken(token: string): TokenVerificationResult {
+    public static decodeLoginToken(token: string): TokenVerificationResult {
         const decodedToken = TokenService.decodeToken(token);
 
         if (decodedToken.errorMessage !== null) {

@@ -20,7 +20,7 @@ export default class VerifyAuthenticationMiddleware {
     
                 const inputToken = authorization.split(' ')[1];
 
-                const { isTokenValid, payload, header, token, errorMessage } = VerifyAuthorizationService.verifyLoginToken(inputToken);
+                const { isTokenValid } = VerifyAuthorizationService.decodeLoginToken(inputToken);
 
                 if (!isTokenValid) {
                     return res.status(401).send(new ErrorResponse('Token is invalid.'));
