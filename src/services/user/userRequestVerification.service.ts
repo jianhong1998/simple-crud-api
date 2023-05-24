@@ -12,7 +12,7 @@ export default class UserRequestVerificationService {
             typeof password === 'string' &&
             password.split(' ').length === 1 &&
             password.length > 7 &&
-            password.length < 20
+            password.length <= 20
         );
     }
 
