@@ -1,15 +1,28 @@
 import jwt from 'jsonwebtoken';
-import JwtConfig from '../../config/JwtConfig.config';
+import JwtConfig from '../../config/Jwt.config';
 import ErrorHandler from '../response/ErrorHandler.service';
 
 export default class TokenService {
     static generateToken(payload: string | Object | Buffer): string {
-        return jwt.sign(payload, JwtConfig.getJwtSecret());
+        return jwt.sign(
+            payload,
+            JwtConfig.getJwtSecret(),
+            {
+                expiresIn: JwtConfig.getJwtExpireTime()
+            }
+        );
     }
 
     static isTokenValid(token: string): boolean {
         try {
-            jwt.verify(token, JwtConfig.getJwtSecret());
+            jwt.verify(
+                token,
+                JwtConfig.getJwtSecret(),
+                {
+                    complete: true,
+                    ignoreExpiration: false
+                }
+            );
 
             return true;
         } catch(error) {
@@ -19,20 +32,19 @@ export default class TokenService {
 
     static decodeToken(token: string): {payload?: jwt.JwtPayload | string, errorMessage: string | null, header?: jwt.JwtHeader} {
         try {
-            const verifyResult = jwt.verify(token, JwtConfig.getJwtSecret());
-            
-            const decoded = jwt.decode(token, {complete: true});
+            const decoded = jwt.verify(token, JwtConfig.getJwtSecret(), {
+                complete: true,
+                ignoreExpiration: false
+            });
 
             if (decoded === null) {
                 throw new Error('jwt.decode() return a null.');
             }
 
-            const header = decoded.header;
-
             return {
-                payload: verifyResult,
-                errorMessage: null,
-                header
+                header: decoded.header,
+                payload: decoded.payload,
+                errorMessage: null
             };
         } catch(error) {
             return {

@@ -8,4 +8,10 @@ export default class JwtConfig {
 
         return secret || 'TOP_SECRET';
     }
+
+    static getJwtExpireTime(): number {
+        const seconds = 30 * 24 * 60 * 60;
+
+        return seconds;
+    }
 }
