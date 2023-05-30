@@ -1,4 +1,4 @@
-import { JwtHeader, JwtPayload } from "jsonwebtoken";
+import { JwtHeader, JwtPayload } from 'jsonwebtoken';
 
 export default interface TokenVerificationResult {
     isTokenValid: boolean;

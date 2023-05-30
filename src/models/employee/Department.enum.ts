@@ -1,6 +1,6 @@
 enum Department {
-    HR = "HR",
-    PS = "PS"
+    HR = 'HR',
+    PS = 'PS',
 }
 
 export default Department;

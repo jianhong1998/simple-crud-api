@@ -1,7 +1,9 @@
-import ResponseUserAttribute from "../../models/user/ResponseUserAttribute.model";
+import ResponseUserAttribute from '../../models/user/ResponseUserAttribute.model';
 
 export default class ResponseUserVerificationService {
-    static verify(unknownObject: unknown): unknownObject is ResponseUserAttribute {
+    static verify(
+        unknownObject: unknown
+    ): unknownObject is ResponseUserAttribute {
         return (
             typeof unknownObject === 'object' &&
             unknownObject !== null &&

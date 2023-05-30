@@ -1,9 +1,24 @@
-import { DataTypes, HasManyCreateAssociationMixin, HasManyGetAssociationsMixin, HasManySetAssociationsMixin, InferAttributes, InferCreationAttributes, Model, Sequelize } from "sequelize";
-import UserDepartmentAttribute from "./UserDepartmentAttribute.model";
-import getSequelize from "../../services/sequelize/sequelize.service";
-import UserDataModel from "../user/UserDataModel.model";
+import {
+    DataTypes,
+    HasManyCreateAssociationMixin,
+    HasManyGetAssociationsMixin,
+    HasManySetAssociationsMixin,
+    InferAttributes,
+    InferCreationAttributes,
+    Model,
+    Sequelize,
+} from 'sequelize';
+import UserDepartmentAttribute from './UserDepartmentAttribute.model';
+import getSequelize from '../../services/sequelize/sequelize.service';
+import UserDataModel from '../user/UserDataModel.model';
 
-class UserDepartmentDataModel extends Model<InferAttributes<UserDepartmentDataModel>, InferCreationAttributes<UserDepartmentDataModel>> implements UserDepartmentAttribute {
+class UserDepartmentDataModel
+    extends Model<
+        InferAttributes<UserDepartmentDataModel>,
+        InferCreationAttributes<UserDepartmentDataModel>
+    >
+    implements UserDepartmentAttribute
+{
     declare departmentId: number;
     declare departmentName: string;
 
@@ -21,31 +36,28 @@ class UserDepartmentDataModel extends Model<InferAttributes<UserDepartmentDataMo
                     primaryKey: true,
                     allowNull: false,
                     autoIncrement: true,
-                    field: 'department_id'
+                    field: 'department_id',
                 },
                 departmentName: {
                     type: DataTypes.STRING,
                     unique: true,
                     allowNull: false,
-                    field: 'department_name'
-                }
+                    field: 'department_name',
+                },
             },
             {
                 sequelize,
                 modelName: 'Department',
-                tableName: 'departments'
+                tableName: 'departments',
             }
         );
     }
 
     public static associate() {
-        UserDepartmentDataModel.hasMany(
-            UserDataModel,
-            {
-                foreignKey: 'department_id',
-                as: 'users'
-            }
-        );
+        UserDepartmentDataModel.hasMany(UserDataModel, {
+            foreignKey: 'department_id',
+            as: 'users',
+        });
     }
 }
 

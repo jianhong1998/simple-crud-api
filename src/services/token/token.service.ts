@@ -4,37 +4,33 @@ import ErrorHandler from '../response/ErrorHandler.service';
 
 export default class TokenService {
     static generateToken(payload: string | Object | Buffer): string {
-        return jwt.sign(
-            payload,
-            JwtConfig.getJwtSecret(),
-            {
-                expiresIn: JwtConfig.getJwtExpireTime()
-            }
-        );
+        return jwt.sign(payload, JwtConfig.getJwtSecret(), {
+            expiresIn: JwtConfig.getJwtExpireTime(),
+        });
     }
 
     static isTokenValid(token: string): boolean {
         try {
-            jwt.verify(
-                token,
-                JwtConfig.getJwtSecret(),
-                {
-                    complete: true,
-                    ignoreExpiration: false
-                }
-            );
+            jwt.verify(token, JwtConfig.getJwtSecret(), {
+                complete: true,
+                ignoreExpiration: false,
+            });
 
             return true;
-        } catch(error) {
+        } catch (error) {
             return false;
         }
     }
 
-    static decodeToken(token: string): {payload?: jwt.JwtPayload | string, errorMessage: string | null, header?: jwt.JwtHeader} {
+    static decodeToken(token: string): {
+        payload?: jwt.JwtPayload | string;
+        errorMessage: string | null;
+        header?: jwt.JwtHeader;
+    } {
         try {
             const decoded = jwt.verify(token, JwtConfig.getJwtSecret(), {
                 complete: true,
-                ignoreExpiration: false
+                ignoreExpiration: false,
             });
 
             if (decoded === null) {
@@ -44,11 +40,11 @@ export default class TokenService {
             return {
                 header: decoded.header,
                 payload: decoded.payload,
-                errorMessage: null
+                errorMessage: null,
             };
-        } catch(error) {
+        } catch (error) {
             return {
-                errorMessage: ErrorHandler.handlerUnknownError(error)
+                errorMessage: ErrorHandler.handleUnknownError(error),
             };
         }
     }

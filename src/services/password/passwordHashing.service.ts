@@ -10,19 +10,25 @@ export default class PasswordService {
 
                 return resolve(hashedPassword);
             } catch (error) {
-                return reject(ErrorHandler.handlerUnknownError(error));
+                return reject(ErrorHandler.handleUnknownError(error));
             }
         });
     }
 
-    public static async comparePassword(originalPassword: string, hashedPassword: string): Promise<boolean> {
+    public static async comparePassword(
+        originalPassword: string,
+        hashedPassword: string
+    ): Promise<boolean> {
         return new Promise(async (resolve, reject) => {
             try {
-                const compareResult = await bcrypt.compare(originalPassword, hashedPassword);
+                const compareResult = await bcrypt.compare(
+                    originalPassword,
+                    hashedPassword
+                );
 
                 return resolve(compareResult);
             } catch (error) {
-                return reject(ErrorHandler.handlerUnknownError(error));
+                return reject(ErrorHandler.handleUnknownError(error));
             }
         });
     }

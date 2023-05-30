@@ -17,16 +17,10 @@ export default class UserRequestVerificationService {
     }
 
     public static verifyDepartmentId(departmentId: unknown): boolean {
-        return (
-            typeof departmentId === 'number' &&
-            departmentId > 0
-        );
+        return typeof departmentId === 'number' && departmentId > 0;
     }
 
     public static verifyUserId(userId: unknown): boolean {
-        return (
-            typeof userId === 'string' &&
-            userId.split(' ').length === 1
-        );
+        return typeof userId === 'string' && userId.split(' ').length === 1;
     }
 }

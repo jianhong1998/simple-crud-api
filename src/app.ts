@@ -13,12 +13,12 @@ const app = express();
 initDataModelsRelationship();
 
 app.use(cors());
-app.use(bodyParser.urlencoded({extended: false}));
+app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 app.use('/', routes);
 
-app.listen({port: 8000}, async () => {
+app.listen({ port: 8000 }, async () => {
     console.log('Server up!');
     await getSequelize().authenticate();
     console.log('Database Connected.');

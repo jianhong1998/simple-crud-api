@@ -1,4 +1,4 @@
-import Department from "../employee/Department.enum";
+import Department from '../employee/Department.enum';
 
 export default class EmployeeRequest {
     public name: string;
@@ -14,6 +14,6 @@ export default class EmployeeRequest {
 
 export class TestEmployeeRequest extends EmployeeRequest {
     constructor() {
-        super("", -1, "" as Department);
+        super('', -1, '' as Department);
     }
 }

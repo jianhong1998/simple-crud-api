@@ -1,5 +1,5 @@
-import { Router } from "express";
-import loginRequestHandler from "../../../controllers/requestHandlers/loginRequestHandler.controller";
+import { Router } from 'express';
+import loginRequestHandler from '../../../controllers/requestHandlers/loginRequestHandler.controller';
 
 const loginRouter = Router();
 

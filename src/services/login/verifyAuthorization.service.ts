@@ -1,5 +1,5 @@
-import TokenVerificationResult from "../../models/token/tokenValidationResult.model";
-import TokenService from "../token/token.service";
+import TokenVerificationResult from '../../models/token/tokenValidationResult.model';
+import TokenService from '../token/token.service';
 
 export default class VerifyAuthorizationService {
     public static decodeLoginToken(token: string): TokenVerificationResult {
@@ -9,15 +9,18 @@ export default class VerifyAuthorizationService {
             return {
                 isTokenValid: false,
                 errorMessage: decodedToken.errorMessage,
-                token
-            }
+                token,
+            };
         }
 
-        if (typeof decodedToken.header === 'undefined' || typeof decodedToken.payload === 'undefined') {
+        if (
+            typeof decodedToken.header === 'undefined' ||
+            typeof decodedToken.payload === 'undefined'
+        ) {
             return {
                 isTokenValid: false,
                 errorMessage: 'header or payload is undefined',
-                token
+                token,
             };
         }
 
@@ -25,7 +28,7 @@ export default class VerifyAuthorizationService {
             isTokenValid: true,
             payload: decodedToken.payload,
             header: decodedToken.header,
-            token
-        }
+            token,
+        };
     }
 }
