@@ -11,12 +11,10 @@ export default class UserRequestMiddleware {
             const userId = req.params.user_id;
 
             if (!UserRequestVerificationService.verifyUserId(userId)) {
-                return res
-                    .status(400)
-                    .send({
-                        errorMessage:
-                            'user_id in request params must be string with no spaces.',
-                    });
+                return res.status(400).send({
+                    errorMessage:
+                        'user_id in request params must be string with no spaces.',
+                });
             }
 
             next();
@@ -32,32 +30,25 @@ export default class UserRequestMiddleware {
             const { username, password, departmentId } = req.body;
 
             if (!UserRequestVerificationService.verifyUsername(username)) {
-                return res
-                    .status(400)
-                    .send({
-                        errorMessage:
-                            'Username must be string with no space and more than 4 characters',
-                    });
+                return res.status(400).send({
+                    errorMessage:
+                        'Username must be string with no space and more than 4 characters',
+                });
             }
 
             if (!UserRequestVerificationService.verifyPassword(password)) {
-                return res
-                    .status(400)
-                    .send({
-                        errorMessage:
-                            'Password must be string with no space and 8-20 characters',
-                    });
+                return res.status(400).send({
+                    errorMessage:
+                        'Password must be string with no space and 8-20 characters',
+                });
             }
 
             if (
                 !UserRequestVerificationService.verifyDepartmentId(departmentId)
             ) {
-                return res
-                    .status(400)
-                    .send({
-                        errorMessage:
-                            'Department Id must be a positive integer.',
-                    });
+                return res.status(400).send({
+                    errorMessage: 'Department Id must be a positive integer.',
+                });
             }
 
             return next();

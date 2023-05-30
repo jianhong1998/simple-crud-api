@@ -10,6 +10,7 @@ COPY . .
 
 EXPOSE 8000
 
-CMD ["npm", "start"]
+# CMD ["NODE_ENV=test", "npm", "start"]
+CMD ["sh", "-c", "NODE_ENV=production npm start"]
 
 # CMD ["npm", "run", "undoMigrate"]

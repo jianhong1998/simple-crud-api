@@ -1,7 +1,12 @@
 const { parse } = require('pg-connection-string');
 require('dotenv').config();
 
-// const {user: devUser, password: devPassword, database: devDatabase, host: devHost} = parse(process.env.DB_URL_DEV);
+const {
+    user: devUser,
+    password: devPassword,
+    database: devDatabase,
+    host: devHost,
+} = parse(process.env.DB_URL_DEV);
 const {
     user: testUser,
     password: testPassword,
@@ -22,12 +27,11 @@ const host = process.env.HOST;
 
 module.exports = {
     development: {
-        // "host": devHost,
+        host: devHost,
         // "host": host,
-        host: 'emp_api_db',
-        username: username,
-        password: password,
-        database: database,
+        username: devUser,
+        password: devPassword,
+        database: devDatabase,
         dialect: 'postgres',
     },
     test: {
@@ -41,7 +45,8 @@ module.exports = {
         username: productionUser || '',
         password: productionPassword || '',
         database: productionDatabase || '',
-        host: productionHost || '',
+        // host: productionHost || '',
+        host: 'emp_api_db',
         dialect: 'postgres',
     },
 };

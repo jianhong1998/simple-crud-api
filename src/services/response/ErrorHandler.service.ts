@@ -4,6 +4,14 @@ export default class ErrorHandler {
             return error.message;
         }
 
+        if (
+            typeof error === 'object' &&
+            error !== null &&
+            !Array.isArray(error)
+        ) {
+            return JSON.stringify(error);
+        }
+
         return String(error);
     }
 }
