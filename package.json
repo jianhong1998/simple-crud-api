@@ -6,14 +6,14 @@
     "scripts": {
         "start": "npx sequelize db:migrate && npm run prettier && npm run build && NODE_ENV=production node dist/app.js",
         "dev": "npm run prettier && npm run migrate:run && npm run build && NODE_ENV=development nodemon src/app.ts",
-        "test": "npm run prettier && NODE_ENV=test jest",
+        "test": "npm run prettier && npx sequelize db:migrate && NODE_ENV=test jest",
         "undoMigrate": "npx sequelize db:migrate:undo:all",
         "build": "npx tsc",
         "migrate:run": "npx sequelize db:migrate",
         "init": "npm i && npm i -D && npx sequelize db:create && npm run migrate:run",
         "prettier": "prettier . --write",
-        "test:watch": "jest --watch-all --verbose",
-        "test:detail": "npm run prettier && jest --verbose"
+        "test:watch": "NODE_ENV=test jest --watch-all --verbose",
+        "test:detail": "npm run prettier && NODE_ENV=test jest --verbose"
     },
     "keywords": [],
     "author": "",

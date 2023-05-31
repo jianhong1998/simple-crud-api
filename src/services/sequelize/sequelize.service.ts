@@ -50,4 +50,6 @@ const getSequelize = (): Sequelize => {
     });
 };
 
+export { nodeEnv };
+
 export default getSequelize;
