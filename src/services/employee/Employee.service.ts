@@ -14,7 +14,7 @@ export default class EmployeeService {
         const employeeDataModels = await EmployeeDataModel.findAll();
 
         const employees = employeeDataModels.map((employeeDataModel) => {
-            const { id, name, department, salary } = employeeDataModel;
+            const { id: id, name, department, salary } = employeeDataModel;
 
             return new EmployeeDef(id, name, salary, department);
         });
@@ -41,7 +41,7 @@ export default class EmployeeService {
             }
 
             // 200
-            const { id, name, department, salary } = employeeDataModel;
+            const { id: id, name, department, salary } = employeeDataModel;
 
             return new DataResponse(
                 new EmployeeDef(id, name, salary, department),
