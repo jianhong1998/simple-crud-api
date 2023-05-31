@@ -1,12 +1,12 @@
 // import bcrypt from 'bcrypt';
-import bcrypt from 'bcryptjs';
+import { hash, compare } from 'bcryptjs';
 import ErrorHandler from '../response/ErrorHandler.service';
 
 export default class PasswordService {
     public static async hashPassword(password: string): Promise<string> {
         return new Promise(async (resolve, reject) => {
             try {
-                const hashedPassword = await bcrypt.hash(password, 15);
+                const hashedPassword = await hash(password, 15);
 
                 return resolve(hashedPassword);
             } catch (error) {
@@ -21,7 +21,7 @@ export default class PasswordService {
     ): Promise<boolean> {
         return new Promise(async (resolve, reject) => {
             try {
-                const compareResult = await bcrypt.compare(
+                const compareResult = await compare(
                     originalPassword,
                     hashedPassword
                 );
