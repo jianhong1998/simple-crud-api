@@ -14,6 +14,7 @@ export default class EmployeeRequestVerificationService {
     public static verifyEmployeeId(employeeId: unknown): boolean {
         return (
             typeof employeeId === 'string' &&
+            employeeId.split('.').length === 1 &&
             NumberVerifier.isStringValidNumber(employeeId) &&
             parseInt(employeeId) > 0
         );
