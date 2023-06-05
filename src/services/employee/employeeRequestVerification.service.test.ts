@@ -6,7 +6,7 @@ describe('class EmployeeRequestVerificationService', () => {
     describe('verifyDepartment()', () => {
         const { verifyDepartment } = EmployeeRequestVerificationService;
 
-        it.concurrent('should return boolean as result', () => {
+        it('should return boolean as result', () => {
             const testDepartment = Department.HR;
 
             const result = verifyDepartment(testDepartment);
@@ -14,7 +14,7 @@ describe('class EmployeeRequestVerificationService', () => {
             expect(typeof result).toBe('boolean');
         });
 
-        it.concurrent('should return true if input is valid department', () => {
+        it('should return true if input is valid department', () => {
             const testDepartment1 = Department.PS;
             const testDepartment2 = Department.HR;
             const testDepartment3 = 'PS';
@@ -31,7 +31,7 @@ describe('class EmployeeRequestVerificationService', () => {
             expect(result4).toBeTruthy();
         });
 
-        it.concurrent('should return false if input is not a string', () => {
+        it('should return false if input is not a string', () => {
             const testDepartment1: number = 1;
             const testDepartment2: boolean = false;
             const testDepartment3: any[] = [];
@@ -63,18 +63,15 @@ describe('class EmployeeRequestVerificationService', () => {
             expect(result9).toBeFalsy();
         });
 
-        it.concurrent(
-            'should return false if input is a string but not a valid department',
-            () => {
-                const testDepartment1 = 'HR123';
+        it('should return false if input is a string but not a valid department', () => {
+            const testDepartment1 = 'HR123';
 
-                const result = verifyDepartment(testDepartment1);
+            const result = verifyDepartment(testDepartment1);
 
-                expect(result).toBeFalsy();
-            }
-        );
+            expect(result).toBeFalsy();
+        });
 
-        it.concurrent('should not throwing any error', () => {
+        it('should not throwing any error', () => {
             try {
                 const testDepartment1: number = 1;
                 const testDepartment2: boolean = false;
@@ -106,7 +103,7 @@ describe('class EmployeeRequestVerificationService', () => {
     describe('verifyEmployeeId()', () => {
         const { verifyEmployeeId } = EmployeeRequestVerificationService;
 
-        it.concurrent('should return boolean as result', () => {
+        it('should return boolean as result', () => {
             const testEmployeeId = '1';
 
             const result = verifyEmployeeId(testEmployeeId);
@@ -114,18 +111,15 @@ describe('class EmployeeRequestVerificationService', () => {
             expect(typeof result).toBe('boolean');
         });
 
-        it.concurrent(
-            'should return true if input is valid employee ID',
-            () => {
-                const testEmployeeId = '100';
+        it('should return true if input is valid employee ID', () => {
+            const testEmployeeId = '100';
 
-                const result = verifyEmployeeId(testEmployeeId);
+            const result = verifyEmployeeId(testEmployeeId);
 
-                expect(result).toBeTruthy();
-            }
-        );
+            expect(result).toBeTruthy();
+        });
 
-        it.concurrent('should return false if input is not string', () => {
+        it('should return false if input is not string', () => {
             const testEmployeeId1: number = 1;
             const testEmployeeId2: boolean = false;
             const testEmployeeId3: Array<any> = [];
@@ -157,54 +151,48 @@ describe('class EmployeeRequestVerificationService', () => {
             expect(result9).toBeFalsy();
         });
 
-        it.concurrent(
-            'should return false if input is string but is invalid employee ID',
-            () => {
-                const testInvalidEmployeeId1 = '123a';
-                const testInvalidEmployeeId2 = 'a123';
-                const testInvalidEmployeeId3 = '1a23';
-                const testInvalidEmployeeId4 = '123.1';
-                const testInvalidEmployeeId5 = 'abc';
+        it('should return false if input is string but is invalid employee ID', () => {
+            const testInvalidEmployeeId1 = '123a';
+            const testInvalidEmployeeId2 = 'a123';
+            const testInvalidEmployeeId3 = '1a23';
+            const testInvalidEmployeeId4 = '123.1';
+            const testInvalidEmployeeId5 = 'abc';
 
-                const result1 = verifyEmployeeId(testInvalidEmployeeId1);
-                const result2 = verifyEmployeeId(testInvalidEmployeeId2);
-                const result3 = verifyEmployeeId(testInvalidEmployeeId3);
-                const result4 = verifyEmployeeId(testInvalidEmployeeId4);
-                const result5 = verifyEmployeeId(testInvalidEmployeeId5);
+            const result1 = verifyEmployeeId(testInvalidEmployeeId1);
+            const result2 = verifyEmployeeId(testInvalidEmployeeId2);
+            const result3 = verifyEmployeeId(testInvalidEmployeeId3);
+            const result4 = verifyEmployeeId(testInvalidEmployeeId4);
+            const result5 = verifyEmployeeId(testInvalidEmployeeId5);
 
-                expect(result1).toBeFalsy();
-                expect(result2).toBeFalsy();
-                expect(result3).toBeFalsy();
-                expect(result4).toBeFalsy();
-                expect(result5).toBeFalsy();
-            }
-        );
+            expect(result1).toBeFalsy();
+            expect(result2).toBeFalsy();
+            expect(result3).toBeFalsy();
+            expect(result4).toBeFalsy();
+            expect(result5).toBeFalsy();
+        });
 
-        it.concurrent(
-            'should execute NumberVerifier.isStringValidNumber() with employeeId in string format',
-            () => {
-                const mockIsStringValidNumber = jest.spyOn(
-                    NumberVerifier,
-                    'isStringValidNumber'
-                );
-                mockIsStringValidNumber.mockReturnValueOnce(true);
+        it('should execute NumberVerifier.isStringValidNumber() with employeeId in string format', () => {
+            const mockIsStringValidNumber = jest.spyOn(
+                NumberVerifier,
+                'isStringValidNumber'
+            );
+            mockIsStringValidNumber.mockReturnValueOnce(true);
 
-                const testEmployeeId = '1234';
+            const testEmployeeId = '1234';
 
-                const result = verifyEmployeeId(testEmployeeId);
+            const result = verifyEmployeeId(testEmployeeId);
 
-                expect(NumberVerifier.isStringValidNumber).toBeCalledTimes(1);
-                expect(NumberVerifier.isStringValidNumber).toBeCalledWith(
-                    testEmployeeId
-                );
-            }
-        );
+            expect(NumberVerifier.isStringValidNumber).toBeCalledTimes(1);
+            expect(NumberVerifier.isStringValidNumber).toBeCalledWith(
+                testEmployeeId
+            );
+        });
     });
 
     describe('verifyName()', () => {
         const { verifyName } = EmployeeRequestVerificationService;
 
-        it.concurrent('should return boolean as result', () => {
+        it('should return boolean as result', () => {
             const testName = 'test';
 
             const result = verifyName(testName);
@@ -212,7 +200,7 @@ describe('class EmployeeRequestVerificationService', () => {
             expect(typeof result).toBe('boolean');
         });
 
-        it.concurrent('should return true if input is a string', () => {
+        it('should return true if input is a string', () => {
             const testName = 'test string';
 
             const result = verifyName(testName);
@@ -220,7 +208,7 @@ describe('class EmployeeRequestVerificationService', () => {
             expect(result).toBeTruthy();
         });
 
-        it.concurrent('should return false if input is not a string', () => {
+        it('should return false if input is not a string', () => {
             const testName1: number = 1;
             const testName2: boolean = false;
             const testName3: Array<any> = [];
@@ -256,7 +244,7 @@ describe('class EmployeeRequestVerificationService', () => {
     describe('verifySalary()', () => {
         const { verifySalary } = EmployeeRequestVerificationService;
 
-        it.concurrent('should return boolean as result', () => {
+        it('should return boolean as result', () => {
             const testSalary = 1;
 
             const result = verifySalary(testSalary);
@@ -264,24 +252,21 @@ describe('class EmployeeRequestVerificationService', () => {
             expect(typeof result).toBe('boolean');
         });
 
-        it.concurrent(
-            'should return true if input is number and greater than positive number',
-            () => {
-                const testSalary1 = 1;
-                const testSalary2 = 0.001;
-                const testSalary3 = 112.12;
+        it('should return true if input is number and greater than positive number', () => {
+            const testSalary1 = 1;
+            const testSalary2 = 0.001;
+            const testSalary3 = 112.12;
 
-                const result1 = verifySalary(testSalary1);
-                const result2 = verifySalary(testSalary2);
-                const result3 = verifySalary(testSalary3);
+            const result1 = verifySalary(testSalary1);
+            const result2 = verifySalary(testSalary2);
+            const result3 = verifySalary(testSalary3);
 
-                expect(result1).toBeTruthy();
-                expect(result2).toBeTruthy();
-                expect(result3).toBeTruthy();
-            }
-        );
+            expect(result1).toBeTruthy();
+            expect(result2).toBeTruthy();
+            expect(result3).toBeTruthy();
+        });
 
-        it.concurrent('should return false if input is not number', () => {
+        it('should return false if input is not number', () => {
             const testSalary1: string = '1';
             const testSalary2: boolean = false;
             const testSalary3: Array<any> = [];
@@ -313,21 +298,18 @@ describe('class EmployeeRequestVerificationService', () => {
             expect(result9).toBeFalsy();
         });
 
-        it.concurrent(
-            'should return false if input is less than or equal to 0',
-            () => {
-                const testSalary1 = 0;
-                const testSalary2 = -0.0001;
-                const testSalary3 = -1;
+        it('should return false if input is less than or equal to 0', () => {
+            const testSalary1 = 0;
+            const testSalary2 = -0.0001;
+            const testSalary3 = -1;
 
-                const result1 = verifySalary(testSalary1);
-                const result2 = verifySalary(testSalary2);
-                const result3 = verifySalary(testSalary3);
+            const result1 = verifySalary(testSalary1);
+            const result2 = verifySalary(testSalary2);
+            const result3 = verifySalary(testSalary3);
 
-                expect(result1).toBeFalsy();
-                expect(result2).toBeFalsy();
-                expect(result3).toBeFalsy();
-            }
-        );
+            expect(result1).toBeFalsy();
+            expect(result2).toBeFalsy();
+            expect(result3).toBeFalsy();
+        });
     });
 });

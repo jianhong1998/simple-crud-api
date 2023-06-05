@@ -1,18 +1,18 @@
 import getSequelize, { nodeEnv } from './sequelize.service';
 
 describe('Test nodeEnv', () => {
-    it.concurrent('should be defined', () => {
+    it('should be defined', () => {
         expect(nodeEnv).toBeDefined();
         expect(nodeEnv).not.toBe('');
     });
 
-    it.concurrent('should be set to "test"', () => {
+    it('should be set to "test"', () => {
         expect(nodeEnv).toBe('test');
     });
 });
 
 describe('getSequelize()', () => {
-    it.concurrent('should not throw error', async () => {
+    it('should not throw error', async () => {
         try {
             await getSequelize().authenticate();
         } catch (error) {
