@@ -11,15 +11,21 @@ export default class EmployeeService {
     public static async getAllEmployees(): Promise<
         DataResponse<EmployeeDef[]>
     > {
-        const employeeDataModels = await EmployeeDataModel.findAll();
+        try {
+            const employeeDataModels = await EmployeeDataModel.findAll();
 
-        const employees = employeeDataModels.map((employeeDataModel) => {
-            const { id: id, name, department, salary } = employeeDataModel;
+            const employees = employeeDataModels.map((employeeDataModel) => {
+                const { id: id, name, department, salary } = employeeDataModel;
 
-            return new EmployeeDef(id, name, salary, department);
-        });
+                return new EmployeeDef(id, name, salary, department);
+            });
 
-        return new DataResponse(employees, 200, '');
+            return new DataResponse(employees, 200, '');
+        } catch (error) {
+            return Promise.reject(
+                Error(ErrorHandler.handleUnknownError(error))
+            );
+        }
     }
 
     // Handlered response: 200, 404
