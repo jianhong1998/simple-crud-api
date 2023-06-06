@@ -17,7 +17,11 @@ export default class UserRequestVerificationService {
     }
 
     public static verifyDepartmentId(departmentId: unknown): boolean {
-        return typeof departmentId === 'number' && departmentId > 0;
+        return (
+            typeof departmentId === 'number' &&
+            departmentId > 0 &&
+            parseInt(`${departmentId}`) === departmentId
+        );
     }
 
     public static verifyUserId(userId: unknown): boolean {
